@@ -1,6 +1,7 @@
+using DataAccess.NewFolder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PresentationWebApp1.Data;
+
 
 namespace PresentationWebApp1
 {
@@ -12,12 +13,12 @@ namespace PresentationWebApp1
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            builder.Services.AddDbContext<ShoppingCartDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ShoppingCartDbContext>();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
