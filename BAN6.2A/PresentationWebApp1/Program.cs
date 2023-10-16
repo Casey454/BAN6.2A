@@ -1,3 +1,4 @@
+using DataAccess.DataContext.Repositories;
 using DataAccess.NewFolder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,11 @@ namespace PresentationWebApp1
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ShoppingCartDbContext>();
             builder.Services.AddControllersWithViews();
+
+
+            builder.Services.AddScoped(typeof(ProductsRepository));// instructing the runtime to inject the ProductsRepository, meaing that
+                                                                   // Whenever an instance of ProductsRepository is required, it will be given 
+                                                                   // the same instance 
 
             var app = builder.Build();
 

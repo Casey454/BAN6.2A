@@ -30,9 +30,10 @@ namespace Domain.Models
         [Required]
         [ForeignKey("Category")]
         public int CategoryFK { get; set; }  //foreign key property:holds the value
-        public Category Category { get; set; } //navigational property
+        public virtual Category Category { get; set; } //navigational property
 
         public string Supplier { get; set; }
+        
         public double WholesalePrice { get; set; }
 
         public string? Image { get; set; }
