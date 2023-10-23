@@ -1,12 +1,13 @@
 ﻿using Domain.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace PresentationWebApp1.Models.ViewModels
 {
     public class CreateProductViewModel
     {
-        public List<Category> Category { get; set; }
+        public List<Category> Categories { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -27,6 +28,7 @@ namespace PresentationWebApp1.Models.ViewModels
 
         public string Supplier { get; set; }
 
+        [DisplayName("Wholesale Price")]
         public double WholesalePrice { get; set; }
 
         public string? Image { get; set; }

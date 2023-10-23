@@ -22,10 +22,10 @@ namespace PresentationWebApp1
                 .AddEntityFrameworkStores<ShoppingCartDbContext>();
             builder.Services.AddControllersWithViews();
 
-
-            builder.Services.AddScoped(typeof(ProductsRepository));// instructing the runtime to inject the ProductsRepository, meaing that
-                                                                   // Whenever an instance of ProductsRepository is required, it will be given 
-                                                                   // the same instance 
+             
+            builder.Services.AddScoped(typeof(ProductsRepository));    // instructing the runtime to inject the ProductsRepository, meaing that
+            builder.Services.AddScoped(typeof(CategoriesRepository));  // Whenever an instance of ProductsRepository is required, it will be given 
+                                                                       // the same instance 
 
             var app = builder.Build();
 
