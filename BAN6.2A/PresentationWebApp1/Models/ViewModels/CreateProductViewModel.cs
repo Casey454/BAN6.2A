@@ -33,6 +33,8 @@ namespace PresentationWebApp1.Models.ViewModels
 
         public string? Image { get; set; }
 
+        public IFormFile Imagefile { get; set; }    
+
 
     }
 }

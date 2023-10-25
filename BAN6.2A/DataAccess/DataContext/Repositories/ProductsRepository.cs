@@ -61,7 +61,7 @@ namespace DataAccess.DataContext.Repositories
         {
             return _shoppingCartDbContext.Products.SingleOrDefault(x => x.Id == id);
         }
-        public void AddProduct(Product product) 
+        public void AddProduct(Product product)
         {
             _shoppingCartDbContext.Products.Add(product);
             _shoppingCartDbContext.SaveChanges();
@@ -69,13 +69,25 @@ namespace DataAccess.DataContext.Repositories
 
         public void UpdateProduct(Product product) { }
 
-        public void DeleteProduct(int id) { }
+        public void DeleteProduct(Guid id)
+        {
+            var product = GetProduct(id);
+            if (product != null)
+            {
+                _shoppingCartDbContext.Products.Remove(product);
 
-    }    
+                _shoppingCartDbContext.SaveChanges();
+            }
+            else throw new Exception("Product not found");
+
+        }
+
+    }
+}
         
         
        
     
-}
+
 
 

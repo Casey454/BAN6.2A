@@ -54,18 +54,18 @@ namespace PresentationWebApp1.Controllers
                              Stock = p.Stock,
                              Category = p.Category.Name // using the navigational property
                          };
-            return View("Index",result);
+            return View("Index", result);
         }
 
         //1. runs first and loads the page wiht empty fields to the user
         [HttpGet]
-        public IActionResult Create() 
+        public IActionResult Create()
         {
-            CreateProductViewModel myModel= new CreateProductViewModel();
+            CreateProductViewModel myModel = new CreateProductViewModel();
             //populate the categories list from the db
 
-            myModel.Categories= _categoriesRepository.GetCategories().ToList();
-                
+            myModel.Categories = _categoriesRepository.GetCategories().ToList();
+
             return View(myModel);
 
 
@@ -75,7 +75,11 @@ namespace PresentationWebApp1.Controllers
 
         //2. runs secondly with the parameters populated with the data...it saves into the db 
 
-        public IActionResult Create(CreateProductViewModel model) {
+        public IActionResult Create(CreateProductViewModel model)
+        {
+            //code which will handle the file upload
+            //1. save the physical file
+            //2. set the path to be stored in th database
 
             //note:(benefit) we are using an existent instance of productsRepository and not creating a new one
             try
@@ -93,24 +97,24 @@ namespace PresentationWebApp1.Controllers
 
                 TempData["message"] = "Product was saved successfully";
 
-                return RedirectToAction("Index");   
+                return RedirectToAction("Index");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 TempData["error"] = "Product was not saved successfully";
                 model.Categories = _categoriesRepository.GetCategories().ToList();
                 return View(model);
             }
-            
+
             return View();
         }
 
         public IActionResult Details(Guid id)
         {
             var product = _productsRepository.GetProduct(id);
-            if(product ==null)
+            if (product == null)
             {
-                return RedirectToAction("Index");   
+                return RedirectToAction("Index");
             }
             else
             {
@@ -130,6 +134,31 @@ namespace PresentationWebApp1.Controllers
             }
         }
 
+        public IActionResult Delete(Guid id)
+        {
+            try
+            {
+                _productsRepository.DeleteProduct(id);
+                TempData["message"] = "Product deleted successfully";
+
+
+            }
+
+            catch (Exception ex)
+            {
+                TempData["error"] = "Product was not deleted. Check the input";
+            }
+
+            return RedirectToAction("Index");
+            //note:return View("index" >>> is going to open directly the html page
+            // note: return REdirectToAction ("Index")>>> is going to trigger the action 
+        }
+
+
     }
+
 }
+
+    
+
 
