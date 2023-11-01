@@ -75,11 +75,44 @@ namespace PresentationWebApp1.Controllers
 
         //2. runs secondly with the parameters populated with the data...it saves into the db 
 
-        public IActionResult Create(CreateProductViewModel model)
+        public IActionResult Create(CreateProductViewModel model, [FromServices] IWebHostEnvironment host)
         {
             //code which will handle the file upload
             //1. save the physical file
+            string relativePath = "";
+            if (model.Imagefile != null)
+            {
+
+                //1a.generation of a UNIQUE filename for our image
+                string newFilename = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(model.Imagefile.FileName);
+
+                //1b. absolute path(where to save the file)ex: C:\Users\User\source\repos\BAN6.2A\BAN6.2A\PresentationWebApp1\wwwroot\images\
+                //IWebHostEnvirnment
+                string absolutePath = host.WebRootPath + "\\images\\" + newFilename;
+
+                //1c.relative path (to save into the db)ex: \images\nameOfTheFile.jpg
+                relativePath = "/images/" + newFilename;
+
+                //1d. save the actual file using the absolute path
+                try
+                {
+                    using (FileStream fs = new FileStream(absolutePath, FileMode.OpenOrCreate))
+                    {
+                        model.Imagefile.CopyTo(fs);
+                        fs.Flush();
+                    }//closing this breacket will close the filestream. if you dont close the filestream, you might get an error telling you thet the file is 
+                }
+
+                catch (Exception)
+                {
+                    //log the error 
+                    throw;
+                }
+            }
+          
+
             //2. set the path to be stored in th database
+
 
             //note:(benefit) we are using an existent instance of productsRepository and not creating a new one
             try
@@ -92,8 +125,17 @@ namespace PresentationWebApp1.Controllers
                     Price = model.Price,
                     WholesalePrice = model.WholesalePrice,
                     Stock = model.Stock,
-                    Supplier = model.Supplier
+                    Supplier = model.Supplier,
+                    Image= relativePath 
                 });
+
+                if (relativePath == "")
+                {
+                    TempData["message"] = "No image was uploaded but product was saved successfully";
+
+                }
+                else TempData["message"] = "Product together with image was saved successfully";
+                return RedirectToAction("Index");
 
                 TempData["message"] = "Product was saved successfully";
 

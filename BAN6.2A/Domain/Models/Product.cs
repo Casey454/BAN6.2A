@@ -36,7 +36,8 @@ namespace Domain.Models
         
         public double WholesalePrice { get; set; }
 
-        public string? Image { get; set; }
+        //image path
+        public string? Image { get; set; }// note: in the database it is never recommended that you store physical images
 
 
     }
