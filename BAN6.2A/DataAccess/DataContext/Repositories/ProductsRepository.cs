@@ -67,7 +67,22 @@ namespace DataAccess.DataContext.Repositories
             _shoppingCartDbContext.SaveChanges();
         }
 
-        public void UpdateProduct(Product product) { }
+        public void UpdateProduct(Product product)
+        {
+            var originalProduct= GetProduct(product.Id);
+            if(originalProduct != null)
+            {
+                originalProduct.Supplier=product.Supplier;
+                originalProduct.Name=product.Name;
+                originalProduct.Description=product.Description;
+                originalProduct.WholesalePrice=product.WholesalePrice;
+                originalProduct.Price=product.Price;
+                originalProduct.CategoryFK=product.CategoryFK;
+                originalProduct.Stock=product.Stock;
+                originalProduct.Image=product.Image;
+                _shoppingCartDbContext.SaveChanges();
+            }
+        }
 
         public void DeleteProduct(Guid id)
         {

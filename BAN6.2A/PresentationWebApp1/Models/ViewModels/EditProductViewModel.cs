@@ -1,11 +1,10 @@
 ﻿using Domain.Models;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
 namespace PresentationWebApp1.Models.ViewModels
 {
-    public class CreateProductViewModel
+    public class EditProductViewModel
     {
         public List<Category> Categories { get; set; }
 
@@ -24,7 +23,7 @@ namespace PresentationWebApp1.Models.ViewModels
 
         [Required]
         public int CategoryFK { get; set; }  //foreign key property:holds the value
-        
+
 
         public string Supplier { get; set; }
 
@@ -33,10 +32,14 @@ namespace PresentationWebApp1.Models.ViewModels
 
         public string? Image { get; set; }
 
-        public IFormFile ImageFile { get; set; }    
+        public IFormFile ImageFile { get; set; }
 
-
+        public Guid Id { get; set; }// since we are editing an exsistent product we must have a property which helps us to identify THAT product
     }
 }
+
+
+      
+
 
 
