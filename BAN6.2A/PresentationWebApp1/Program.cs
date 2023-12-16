@@ -1,10 +1,13 @@
+using DataAccess.DataContext;
 using DataAccess.DataContext.Repositories;
 using DataAccess.NewFolder;
+using DataAccess.Repositories;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace PresentationWebApp1
+namespace PresentationWebApp
 {
     public class Program
     {
@@ -22,10 +25,20 @@ namespace PresentationWebApp1
                 .AddEntityFrameworkStores<ShoppingCartDbContext>();
             builder.Services.AddControllersWithViews();
 
-             
-            builder.Services.AddScoped(typeof(ProductsRepository));    // instructing the runtime to inject the ProductsRepository, meaing that
-            builder.Services.AddScoped(typeof(CategoriesRepository));  // Whenever an instance of ProductsRepository is required, it will be given 
-                                                                       // the same instance 
+            //absolute path where to store products: C:\Users\attar\source\repos\EP2023_BAN2A\BANSolution\PresentationWebApp\Data\
+
+            var absolutePath = builder.Environment.ContentRootPath + "Data\\products.json";
+
+            builder.Services.AddScoped<IProduct, ProductsJsonRepository>(x => new ProductsJsonRepository(absolutePath));   //instructing the runtime to inject the ProductsRepository, meaning that
+
+            builder.Services.AddScoped(typeof(CategoriesRepository)); //whenever a instance of ProductsRepository is requested, it will be given
+                                                                      //the same instance
+
+            //AddScoped => will create AN instance (e.g. of ProductsRepository) one per request
+            //             (in a shopping cart context - this is the most efficient one)
+            //AddTransient => will create a new instance for every call
+            //AddSingleton => will create ONE instance for ALL users!!! 
+
 
             var app = builder.Build();
 

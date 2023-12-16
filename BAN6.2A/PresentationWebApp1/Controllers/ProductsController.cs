@@ -1,18 +1,23 @@
 ﻿using DataAccess.DataContext.Repositories;
-using DataAccess.NewFolder;
+using DataAccess.Repositories;
+using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using PresentationWebApp1.Models.ViewModels;
+
 namespace PresentationWebApp.Controllers
 {
     public class ProductsController : Controller
     {
         public ProductsRepository PR { get; set; }
 
-        private ProductsRepository _productsRepository;
+        private IProduct _productsRepository;
         private CategoriesRepository _categoriesRepository;
-        public ProductsController(ProductsRepository productsRepository, CategoriesRepository categoriesRepository)
+
+        //note (at the moment/ obsolete): the ProductsController accepts an instance of ProductsRepository
+        //>>>>>
+        //note (from now onwards): the ProductsController accepts ANY instance of IProducts i.e. it accepts ProductsRepository, ProductsJsonRepository, ProductsNoSqlRepository
+        public ProductsController(IProduct productsRepository, CategoriesRepository categoriesRepository)
         {
             _categoriesRepository = categoriesRepository;
             _productsRepository = productsRepository;
@@ -21,6 +26,8 @@ namespace PresentationWebApp.Controllers
         public IActionResult Index()
         {
             var list = _productsRepository.GetProducts().OrderBy(x => x.Name).ToList(); //there will be ONE database call
+
+            var fixForCategory = _categoriesRepository.GetCategories().ToList();
 
             //transfer from Product >>>>> ProductViewModel
             var result = from p in list
@@ -32,7 +39,7 @@ namespace PresentationWebApp.Controllers
                              Image = p.Image,
                              Price = p.Price,
                              Stock = p.Stock,
-                             Category = p.Category.Name //using the navigational property
+                             Category = fixForCategory.SingleOrDefault(x => x.Id == p.CategoryFK).Name // p.Category.Name //using the navigational property
                          };
 
 
@@ -203,45 +210,47 @@ namespace PresentationWebApp.Controllers
             //note: return RedirectToAction("Index") >>> is going to trigger the action
         }
 
-        // to load the page ith textboxes where the use can type in the new details
-        //overwriting the old detals... therefore we need to show the user also the old detials
 
+        //to load the page with textboxes where the user can type in the new details
+        //overwriting the old details...therefore we need to show the user also the old details
         public IActionResult Edit(Guid id)
         {
+
             var originalProduct = _productsRepository.GetProduct(id);
-            //to pass details to/from the pages/view we use viewmodels
-            
+
+            //to pass details to/from the pages/views we use viewmodels
+
             EditProductViewModel myModel = new EditProductViewModel();
             myModel.Categories = _categoriesRepository.GetCategories().ToList();
 
+
             myModel.Supplier = originalProduct.Supplier;
-            myModel.Name = originalProduct.Name;
-            myModel.Description = originalProduct.Description;
             myModel.WholesalePrice = originalProduct.WholesalePrice;
             myModel.Price = originalProduct.Price;
+            myModel.Name = originalProduct.Name;
             myModel.CategoryFK = originalProduct.CategoryFK;
+            myModel.Description = originalProduct.Description;
             myModel.Stock = originalProduct.Stock;
             myModel.Image = originalProduct.Image;
-            myModel.Id = id;// when the vew together with the edited details is going to be resubmitted,
-                            //we need the id again to identify which product we have to update/overwrite
-           
+            myModel.Id = originalProduct.Id; // don't forget this!!! because when the View
+                                             // together with the edited is going to be resubmitted, 
+                                             //we need the id again to identify which
+                                             //product we have to update/overwrite
 
             return View(myModel);
         }
 
         [HttpPost]
-        public IActionResult Edit(EditProductViewModel model,[FromServices] IWebHostEnvironment host)
+        public IActionResult Edit(EditProductViewModel model, [FromServices] IWebHostEnvironment host)
         {
-
             //note: (benefit) we are using an existent instance of productsRepository and not creating a new one!
             try
             {
-
                 //code which will handle file upload
                 //1. save the phyiscal file
                 string relativePath = "";
-                string oldRelativePath = _productsRepository.GetProduct(model.Id).Image; ;
-                if (model.ImageFile != null)// the user \decided to overwrite image
+                string oldRelativePath = _productsRepository.GetProduct(model.Id).Image; //images/1eac8e0b-8786-4692-8a7c-eb898bc0eb1d.jpg
+                if (model.ImageFile != null) //the user decided to overwrite image
                 {
                     //1a. generation of a UNIQUE filename for our image
                     string newFilename = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(model.ImageFile.FileName);
@@ -264,9 +273,9 @@ namespace PresentationWebApp.Controllers
                             fs.Flush();
                         } //closing this bracket will close the filestream. if you don't close the filestream, you might get an error telling you that the File is being used by another process
 
-                        //after the new image is saved, we can delete the old one 
-                        //get the old path and delete
+                        //after the new image is saved, we can delete the old one
 
+                        //get the old path and delete
 
                         var oldAbsolutePath = host.WebRootPath + "\\images\\" + System.IO.Path.GetFileName(oldRelativePath);
 
@@ -282,7 +291,6 @@ namespace PresentationWebApp.Controllers
                 {
                     relativePath = oldRelativePath;
                 }
-                
 
                 //2. set the path to be stored in the database
                 _productsRepository.UpdateProduct(new Product()
@@ -295,12 +303,12 @@ namespace PresentationWebApp.Controllers
                     Stock = model.Stock,
                     Supplier = model.Supplier,
                     Image = relativePath,
-                    Id = model.Id
-                }) ;
+                    Id = model.Id //<<<<<<<<<< very important in the Update/edit context. it will help the code identify which product to edit
+                });
 
                 if (relativePath == "")
                 {
-                    TempData["message"] = "No Image was uploaded but product was saved successfully";
+                    TempData["message"] = "No Image was uploaded but product was updated successfully";
                 }
                 else TempData["message"] = "Product together with image was updated successfully";
 
@@ -313,10 +321,6 @@ namespace PresentationWebApp.Controllers
                 model.Categories = _categoriesRepository.GetCategories().ToList();
                 return View(model);
             }
-
         }
-        
     }
 }
-
-

@@ -6,14 +6,12 @@ namespace PresentationWebApp1.Models.ViewModels
 {
     public class EditProductViewModel
     {
-        public List<Category> Categories { get; set; }
+        public List<Category> Categories { get; set; } //for display purposes 
 
         [Required]
         public string Name { get; set; }
-
         [Required]
         public string Description { get; set; }
-
         [Required]
         public double Price { get; set; }
 
@@ -22,8 +20,7 @@ namespace PresentationWebApp1.Models.ViewModels
         public int Stock { get; set; }
 
         [Required]
-        public int CategoryFK { get; set; }  //foreign key property:holds the value
-
+        public int CategoryFK { get; set; } //foreign key property: holds the value
 
         public string Supplier { get; set; }
 
@@ -34,12 +31,8 @@ namespace PresentationWebApp1.Models.ViewModels
 
         public IFormFile ImageFile { get; set; }
 
-        public Guid Id { get; set; }// since we are editing an exsistent product we must have a property which helps us to identify THAT product
+
+        public Guid Id { get; set; } //since we are editing an existent product we must have a property which helps us to identify THAT product
+
     }
 }
-
-
-      
-
-
-
