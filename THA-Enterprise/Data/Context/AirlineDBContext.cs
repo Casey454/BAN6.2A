@@ -18,6 +18,8 @@ namespace Data.Context
 
         public DbSet<Flight> Flights { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
+
+        public DbSet<Country> Countries { get; set; }   
     }
 }
         

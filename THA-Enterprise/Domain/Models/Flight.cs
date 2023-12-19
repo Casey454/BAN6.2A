@@ -10,7 +10,7 @@ namespace Domain.Models
 {
     public class Flight
     {
-       
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public int Rows { get; set; }
