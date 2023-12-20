@@ -10,8 +10,8 @@ namespace Domain.Models
 {
     public class Flight
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+       
+        public Guid Id { get; set; }
 
         public int Rows { get; set; }
 
@@ -20,10 +20,17 @@ namespace Domain.Models
         public DateTime DepartureDate { get; set; }
 
         public DateTime ArrivalDate { get; set; }
+       
+        [Required]
+        [ForeignKey("CountryFrom")]
+        public string CountryFromFK{ get; set; }
 
-        public string CountryFrom { get; set; }
+        public virtual Country CountryFrom{ get; set; }
 
-        public string CountyTo { get; set; }
+        [Required]
+        [ForeignKey("CountryTo")]
+        public string CountryToFK { get; set; }
+        public virtual Country CountryTo { get; set; }
 
         public double WholesalePrice { get; set; }
 

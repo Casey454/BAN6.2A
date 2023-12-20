@@ -27,9 +27,18 @@ namespace Data.Repositories
         {
             return _airlineDbContext.Flights;
         }
-        public Flight GetFlight(int Id)
+        public Flight GetFlight(Guid Id)
         {
             return _airlineDbContext.Flights.FirstOrDefault(f => f.Id == Id);
+        }
+
+        public void AddFlight(Flight flight)
+
+        {
+
+            _airlineDbContext.Flights.Add(flight);
+            _airlineDbContext.SaveChanges(); 
+
         }
     }
 }

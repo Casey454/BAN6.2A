@@ -34,10 +34,23 @@ namespace Data.Repositories
 
 
 
-            bool IsSeatBooked(int row, int column)
+            bool IsSeatBooked(int flightId, int row, int column, out string bookingInfo)
             {
+                var isBooked = _airlineDBContext.Tickets.Any(t => t.Id == flightId && t.Rows == row && t.Columns == column);
 
-                return _airlineDBContext.Tickets.Any(t => t.Rows == row && t.Columns == column);
+                if (isBooked)
+                {
+                    
+                    var bookedTicket = _airlineDBContext.Tickets.FirstOrDefault(t => t.Id == flightId && t.Rows == row && t.Columns == column);
+                    bookingInfo = $"Seat ({row}, {column}) is booked.";
+                }
+                else
+                {
+                    
+                    bookingInfo = $"Seat ({row}, {column}) is available.";
+                }
+
+                return isBooked;
             }
         }
 
